@@ -10,7 +10,7 @@
   "homepage": "https://satsu.pro/docs/install",
   "repository": {
     "type": "git",
-    "url": "https://github.com/satsu-webanalytics/satsu",
+    "url": "git+https://github.com/satsu-webanalytics/satsu.git",
     "directory": "npm/satsu-analytics"
   },
   "keywords": [
