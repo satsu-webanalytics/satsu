@@ -1,0 +1,205 @@
+# Canonical: https://satsu.pro/llms.txt
+# This file is a copy; the URL above is rendered live from the plan catalog.
+
+# Satsu
+
+> Cookieless, privacy-first web analytics — no consent banner needed. Sessions are derived from a daily-rotating fingerprint, never stored; no cookies, no persistent visitor IDs.
+
+## Facts
+
+- What: Cookieless, privacy-first web analytics — no consent banner needed.
+- Why no banner: Sessions are derived from a daily-rotating fingerprint, never stored; no cookies, no persistent visitor IDs.
+- Hosting: EU-hosted (Hetzner, Finland).
+- Install: one script tag, under 3 KB; works with HTML, Next.js, React / Vite, Vue / Nuxt, Astro.
+- Free: free forever, no card: 10,000 events/month, 2 sites, 3 months retention, 1 goal.
+- Pro: €6/month or €60/year: 500,000 events, unlimited sites, 2 years retention, 5 team members.
+- Business: €19/month or €190/year: 5,000,000 events, 5 years retention, unlimited team members.
+- Extras: Live visitors; AI-assistant traffic as its own channel; SEO, accessibility, security, GDPR and performance audits; Uptime and TLS monitoring; Public read API (Pro and up).
+- Not: not open source, not self-hostable, no session recordings, no persistent identifiers.
+- Pricing: https://satsu.pro/pricing
+
+## Install
+
+```html
+<script defer src="https://track.satsu.pro/tracker.js" data-site="YOUR_ID"></script>
+```
+
+- `data-site` (required): Your site ID. Without it the tracker does nothing.
+- `data-api` (optional): Override the ingest endpoint. Defaults to the script's own origin + /e, so you normally never set this.
+- `data-track-paths` (optional): Comma-separated path prefixes to limit tracking to (e.g. /,/docs,/blog). Omit to track every path.
+
+- HTML: add the same script tag to the root layout — https://satsu.pro/docs/install#plain-html
+- Next.js: add the same script tag to the root layout — https://satsu.pro/docs/install#nextjs-app-router
+- React / Vite: add the same script tag to the root layout — https://satsu.pro/docs/install#react-vite--cra
+- Vue / Nuxt: add the same script tag to the root layout — https://satsu.pro/docs/install#vue--nuxt
+- Astro: add the same script tag to the root layout — https://satsu.pro/docs/install#astro
+
+## Privacy
+
+Sessions are derived from a daily-rotating fingerprint, never stored; no cookies, no persistent visitor IDs. A visit is matched to a session by a hash of site, IP address, user agent, the current day and a secret salt; because the day is part of it, the hash changes every 24 hours, so visits cannot be linked across days; raw IP addresses and user agents are never stored, and the hash cannot be reversed to a person.
+
+Never collected or stored: cookies, localStorage IDs, cross-day fingerprints, session recordings, mouse movement, PII in event properties, reverse-IP company lookups.
+
+Details: https://satsu.pro/docs/privacy · what is tracked: https://satsu.pro/docs/what-we-track
+
+## Compare
+
+### Satsu vs Google Analytics
+
+- Price — Satsu: €6/mo (500k events) | Google Analytics: Free (ad-funded)
+- Cookie consent banner — Satsu: Not needed | Google Analytics: Required in EU
+- Data sampling — Satsu: Never | Google Analytics: At scale
+- AI-traffic channel — Satsu: Native, per assistant | Google Analytics: Buried
+- Data ownership — Satsu: Yours, EU-hosted | Google Analytics: Google's
+- SEO + accessibility audits — Satsu: Built in | Google Analytics: No
+- Setup — Satsu: One script tag | Google Analytics: Tag + consent + config
+- E-commerce depth — Satsu: Focused | Google Analytics: Very deep
+
+Why Satsu:
+- No cookie banner, no lost visitors: GA4 needs consent in the EU, and every visitor who clicks 'reject' vanishes from your numbers. Satsu stores no personal data, so there's nothing to consent to — you count everyone.
+- Your data isn't the product: GA is free because your visitors' data fuels Google's ad business. Satsu is a paid product; your data is yours, EU-hosted, never sold or sampled.
+- AI traffic as its own channel: GA4 added an AI-assistant channel in 2026, but it's buried in a marketing-first UI. Satsu surfaces ChatGPT, Perplexity, Claude and Gemini natively in a dashboard built for builders, not marketers.
+- More than analytics: Satsu also audits your SEO and accessibility and monitors uptime — one privacy-first place instead of GA4 plus three other tools.
+
+Where Google Analytics is stronger: GA4 is free and hard to beat on raw cost if privacy isn't a concern. It has far deeper e-commerce and funnel reporting for large online stores. It integrates tightly with Google Ads and the wider Google marketing stack.
+
+Full comparison: https://satsu.pro/vs/google-analytics
+
+### Satsu vs Plausible
+
+- Entry price — Satsu: €6/mo | Plausible: $9/mo
+- Volume at entry — Satsu: 500k events | Plausible: 10k pageviews
+- Free tier (not a trial) — Satsu: Yes | Plausible: No
+- AI-traffic channel — Satsu: Native | Plausible: Raw referrer
+- SEO + accessibility audits — Satsu: Built in | Plausible: No
+- Uptime monitoring — Satsu: Built in | Plausible: No
+- Cookieless · no banner — Satsu: Yes | Plausible: Yes
+- Open-source / self-host — Satsu: No | Plausible: Yes
+
+Why Satsu:
+- Far more headroom per euro: Plausible's entry plan covers roughly 10k pageviews; Satsu's €6 plan covers 500k events. Counting differs (events vs pageviews), but the headroom-per-euro gap is large — and it stays large as you grow.
+- A free tier that never expires: Plausible is a paid product after a trial. Satsu has a free tier with no card and no clock — start for free and stay free until you outgrow it.
+- AI traffic as its own channel: Plausible shows AI assistants as raw referrers. Satsu classifies ChatGPT, Perplexity, Claude and Gemini into a dedicated AI channel so you can actually measure them.
+- SEO, accessibility & uptime included: Plausible is analytics-only. Satsu audits your SEO and accessibility and monitors uptime in the same privacy-first product.
+
+Where Plausible is stronger: Plausible is open-source and self-hostable — a real plus if you want to run it yourself. It's a mature, well-established product with a long track record. Its script is famously tiny and its UI is beautifully minimal.
+
+Full comparison: https://satsu.pro/vs/plausible
+
+### Satsu vs Fathom
+
+- Entry price — Satsu: €6/mo | Fathom: $15/mo
+- Free tier (not a trial) — Satsu: Yes | Fathom: No (trial only)
+- AI-traffic channel — Satsu: Native | Fathom: Raw referrer
+- SEO + accessibility audits — Satsu: Built in | Fathom: No
+- Uptime monitoring — Satsu: Built in | Fathom: No
+- Cookieless · no banner — Satsu: Yes | Fathom: Yes
+- Flat pricing at high volume — Satsu: Tiered | Fathom: Flat
+
+Why Satsu:
+- Free forever, not a 7-day trial: Fathom is a paid product with a trial. Satsu's free tier has no card and no expiry — a real starting point, not a countdown.
+- Lower entry price: Fathom starts around $15/mo; Satsu starts at €6/mo, with room for 500k events.
+- AI traffic + site audits: Fathom is analytics-only and shows AI assistants as referrers. Satsu breaks out an AI channel and adds SEO, accessibility and uptime audits.
+
+Where Fathom is stronger: Fathom's flat pricing can work out cheaper at very high pageview volumes. It offers unlimited sites and email reports on every plan. It's a mature product with a strong privacy reputation.
+
+Full comparison: https://satsu.pro/vs/fathom
+
+### Satsu vs Simple Analytics
+
+- AI referral traffic as a channel — Satsu: Yes | Simple Analytics: No
+- "AI" feature — Satsu: Traffic channel | Simple Analytics: Chat-with-data assistant
+- SEO + accessibility audits — Satsu: Built in | Simple Analytics: No
+- Uptime monitoring — Satsu: Built in | Simple Analytics: No
+- Free tier (not a trial) — Satsu: Yes | Simple Analytics: Trial
+- Cookieless · no banner — Satsu: Yes | Simple Analytics: Yes
+
+Why Satsu:
+- Real AI-traffic tracking, not a chat bot: Simple Analytics' 'AI' is an assistant that answers questions about your dashboard. Satsu's AI channel measures the actual visitors ChatGPT, Perplexity, Claude and Gemini send you — a different thing under the same word.
+- The full site-health suite: Beyond analytics, Satsu audits SEO and accessibility and monitors uptime — Simple Analytics is analytics-only.
+- A free tier that never expires: Start for free with no card and no clock.
+
+Where Simple Analytics is stronger: Simple Analytics has a clean, focused product and a strong privacy stance. Its chat-with-your-data assistant is genuinely handy for quick questions. It's an established, EU-based tool.
+
+Full comparison: https://satsu.pro/vs/simple-analytics
+
+### Satsu vs Matomo
+
+- Cookieless by default — Satsu: Yes | Matomo: No (opt-in)
+- Setup — Satsu: One script tag | Matomo: Self-host or cloud + config
+- AI-traffic channel — Satsu: Native | Matomo: No
+- SEO + accessibility audits — Satsu: Built in | Matomo: Plugins
+- Entry price — Satsu: €6/mo | Matomo: €29/mo (cloud)
+- Depth (heatmaps, recordings) — Satsu: Focused | Matomo: Very deep
+- Open-source / self-host — Satsu: No | Matomo: Yes
+
+Why Satsu:
+- Cookieless by default: Matomo uses cookies unless you configure it otherwise. Satsu is cookieless from the first script tag — no banner, no config.
+- Simple, not a project: Matomo is powerful but heavy — self-hosting and tuning it is real work. Satsu is one script tag and a clean dashboard.
+- AI traffic + site audits included: Satsu breaks out AI-assistant traffic and adds SEO, accessibility and uptime audits without extra plugins.
+
+Where Matomo is stronger: Matomo is open-source and fully self-hostable, giving you total data ownership. It's extremely deep — heatmaps, session recordings, A/B tests, e-commerce. A huge plugin ecosystem extends it in almost any direction.
+
+Full comparison: https://satsu.pro/vs/matomo
+
+
+## Guides
+
+- [AI-traffic analytics — track ChatGPT & Claude](https://satsu.pro/ai-traffic-analytics): See the traffic ChatGPT, Perplexity, Claude and Gemini send you — per assistant, cookieless, plus the referrer-less clicks other tools lose to “direct.”
+- [Cookieless analytics — no cookie banner](https://satsu.pro/cookieless-analytics): Cookieless web analytics with no consent banner: Satsu stores no personal data and uses a throwaway daily fingerprint that can't be reversed to a person.
+- [GDPR-compliant analytics — EU-hosted](https://satsu.pro/gdpr-compliant-analytics): GDPR-compliant web analytics with no personal data and no consent banner, hosted in the EU. Satsu is cookieless by design, not by checkbox.
+
+## Docs
+
+- [Getting started: Introduction](https://satsu.pro/docs)
+- [Getting started: Install the tracker](https://satsu.pro/docs/install)
+- [Getting started: Verify it works](https://satsu.pro/docs/verify)
+- [Tracking: Custom events](https://satsu.pro/docs/events)
+- [Tracking: Goals & conversions](https://satsu.pro/docs/goals)
+- [Tracking: What we track](https://satsu.pro/docs/what-we-track)
+- [Privacy: How it's private](https://satsu.pro/docs/privacy)
+- [Audits: Performance](https://satsu.pro/docs/audits/performance)
+- [Audits: Accessibility](https://satsu.pro/docs/audits/accessibility)
+- [Audits: GDPR](https://satsu.pro/docs/audits/gdpr)
+- [Audits: Security](https://satsu.pro/docs/audits/security)
+- [Audits: SEO](https://satsu.pro/docs/audits/seo)
+- [AI suite: How it works](https://satsu.pro/docs/ai-suite)
+- [Reference: Glossary](https://satsu.pro/docs/glossary)
+- [Reference: Analytics API](https://satsu.pro/docs/api)
+- [Full docs as one text file](https://satsu.pro/llms-full.txt)
+
+## API
+
+Read-only public API (Pro and up). Base URL: `https://api.satsu.pro/v1`. Auth: `Authorization: Bearer satsu_live_…` (org-scoped key from Settings → API keys).
+
+- `GET /v1/sites` — list the organization's sites (id, name, domain)
+- `GET /v1/sites/{site}/overview` — visitors, pageviews, bounce rate, duration
+- `GET /v1/sites/{site}/timeseries` — ?interval=hour|day
+- `GET /v1/sites/{site}/breakdown/{dimension}` — pages | referrers | channels | countries | devices | browsers | operating-systems | events
+- `GET /v1/sites/{site}/goals/{goal}/conversions` — ?breakdown=
+
+Rate limits per key; every response carries X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, Retry-After (on 429).
+
+Reference: https://satsu.pro/docs/api
+
+## Plans
+
+| Plan | Price | Events/month | Sites | Retention | Team |
+|---|---|---|---|---|---|
+| Free | €0 | 10k | 2 | 3 months | 1 |
+| Pro | €6/mo or €60/yr | 500k | Unlimited | 2 years | 5 |
+| Business | €19/mo or €190/yr | 5M | Unlimited | 5 years | Unlimited |
+
+## Not
+
+- Not open source
+- Not self-hostable
+- No session recordings
+- No persistent identifiers
+
+## Contact
+
+- General: hello@satsu.pro
+- Security: security@satsu.pro
+- Site: https://satsu.pro/
+- Canonical: https://satsu.pro/llms.txt
