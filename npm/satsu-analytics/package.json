@@ -1,0 +1,28 @@
+{
+  "name": "satsu-analytics",
+  "version": "0.0.2",
+  "description": "Cookieless, privacy-first web analytics \u2014 no consent banner needed. Placeholder package \u2014 install via the script tag.",
+  "license": "MIT",
+  "private": false,
+  "files": [
+    "README.md"
+  ],
+  "homepage": "https://satsu.pro/docs/install",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/satsu-webanalytics/satsu",
+    "directory": "npm/satsu-analytics"
+  },
+  "keywords": [
+    "analytics",
+    "web-analytics",
+    "cookieless",
+    "privacy",
+    "gdpr",
+    "google-analytics-alternative",
+    "plausible-alternative",
+    "nextjs",
+    "astro"
+  ],
+  "author": "Satsu (https://satsu.pro)"
+}

@@ -1,6 +1,6 @@
-# satsu
+# satsu-analytics
 
-**Placeholder** — this package reserves the name and ships no runtime. Install Satsu via the script tag:
+**Placeholder — Satsu installs via one script tag.** This package reserves the name and ships no runtime; a real package will replace this version.
 
 ```html
 <script defer src="https://track.satsu.pro/tracker.js" data-site="YOUR_ID"></script>
@@ -11,3 +11,4 @@ Cookieless, privacy-first web analytics — no consent banner needed. Sessions a
 - Install docs: https://satsu.pro/docs/install
 - Fact sheet: https://satsu.pro/llms.txt
 - Pricing: https://satsu.pro/pricing
+- Source of this placeholder: https://github.com/satsu-webanalytics/satsu/tree/main/npm/satsu-analytics

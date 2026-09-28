@@ -65,7 +65,7 @@ A visit is matched to a session by a hash of site, IP address, user agent, the c
 
 ## npm
 
-[`npm/satsu`](./npm/satsu) and [`npm/tracker`](./npm/tracker) are README-only placeholders for the `satsu` and `@satsu/tracker` package names. There is no npm runtime yet — install via the script tag above.
+[`npm/satsu-analytics`](./npm/satsu-analytics) is the README-only placeholder published as [`satsu-analytics`](https://www.npmjs.com/package/satsu-analytics). There is no npm runtime yet — install via the script tag above. (The unscoped name `satsu` is rejected by npm's similarity check, so the package name is `satsu-analytics`.)
 
 ## License
 
