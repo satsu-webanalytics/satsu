@@ -1,0 +1,7 @@
+{
+  "name": "astro-docs",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "astro dev" },
+  "dependencies": { "astro": "^5.0.0" }
+}

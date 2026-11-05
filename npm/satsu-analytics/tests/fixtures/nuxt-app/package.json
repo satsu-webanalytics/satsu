@@ -1,0 +1,7 @@
+{
+  "name": "nuxt-blog",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "nuxt dev" },
+  "dependencies": { "nuxt": "^4.0.0", "vue": "^3.5.0" }
+}

@@ -1,0 +1,15 @@
+---
+interface Props {
+  site?: string;
+  debug?: boolean;
+}
+const { site = import.meta.env.PUBLIC_SATSU_SITE, debug = false } = Astro.props;
+---
+
+<div hidden data-satsu-site={site} data-satsu-debug={debug ? "1" : undefined}></div>
+
+<script>
+  import { start } from "satsu-analytics/dom";
+  const el = document.querySelector<HTMLElement>("[data-satsu-site]");
+  start(el?.dataset.satsuSite, el?.dataset.satsuDebug === "1");
+</script>

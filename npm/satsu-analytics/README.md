@@ -1,14 +1,30 @@
 # satsu-analytics
 
-**Placeholder — Satsu installs via one script tag.** This package reserves the name and ships no runtime; a real package will replace this version.
+Privacy-first analytics for React and Next.js. No cookies, no storage, no IDs.
 
-```html
-<script defer src="https://track.satsu.pro/tracker.js" data-site="YOUR_ID"></script>
+Sessions are derived from a daily-rotating fingerprint that cannot be linked across days; raw IP addresses and user agents are never stored, no cookies, no persistent visitor IDs.
+
+## Quickstart
+
+```sh
+npx satsu-analytics init
 ```
 
-Cookieless, privacy-first web analytics — no consent banner needed. Sessions are derived from a daily-rotating fingerprint, never stored; no cookies, no persistent visitor IDs.
+`init` signs you in, creates the site and wires the component into your project. To set it up by hand:
 
-- Install docs: https://satsu.pro/docs/install
-- Fact sheet: https://satsu.pro/llms.txt
-- Pricing: https://satsu.pro/pricing
-- Source of this placeholder: https://github.com/satsu-webanalytics/satsu/tree/main/npm/satsu-analytics
+```sh
+npm install satsu-analytics
+```
+
+```tsx
+import { Satsu } from "satsu-analytics/next"; // or "satsu-analytics/react"
+
+<Satsu site="YOUR_SITE_ID" />; // or set NEXT_PUBLIC_SATSU_SITE / VITE_SATSU_SITE
+```
+
+```ts
+import { track } from "satsu-analytics";
+track("signup", { plan: "pro" });
+```
+
+On localhost the tracker is not loaded; one dev ping is sent per page load.
