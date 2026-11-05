@@ -24,7 +24,7 @@ const goalType = z.enum(["custom_event", "path"]);
 
 const enc = encodeURIComponent;
 
-const AGGREGATES = "Returns aggregated numbers only, never data about individual visitors.";
+const AGGREGATES = "Returns aggregated numbers (counts per page, source, country, etc.), not records of single visits.";
 
 export function createServer(deps: McpDeps = realDeps): McpServer {
   const server = new McpServer({ name: "satsu-analytics", version: CLIENT_VERSION });
@@ -58,7 +58,7 @@ export function createServer(deps: McpDeps = realDeps): McpServer {
 
   tool(
     "traffic_summary",
-    `Visitors, pageviews and related totals for a site over a period. Free plan: last 7 or 30 days. ${AGGREGATES}`,
+    `Visitors, pageviews and related totals for a site over a period. Free plan: within the plan's retention (3 months). ${AGGREGATES}`,
     { site, ...range },
     (a) => ({ method: "GET", path: `/v1/sites/${enc(a.site)}/overview`, query: { from: a.from, to: a.to } }),
   );

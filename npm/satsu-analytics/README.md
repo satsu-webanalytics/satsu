@@ -1,8 +1,8 @@
 # satsu-analytics
 
-Privacy-first analytics for React and Next.js. No cookies, no storage, no IDs.
+Privacy-first analytics components for React, Next.js, Vue/Nuxt, Astro, SvelteKit and Remix. No cookies, no browser storage, no persistent visitor IDs; sessions are a daily-rotating hash.
 
-Sessions are derived from a daily-rotating fingerprint that cannot be linked across days; raw IP addresses and user agents are never stored, no cookies, no persistent visitor IDs.
+Sessions are derived from a daily-rotating fingerprint that cannot be linked across days; raw IP addresses and user agents are never written to the analytics database and pass through our message queue only until they are processed, at most 24 hours; no cookies, no persistent visitor IDs.
 
 ## Quickstart
 
@@ -10,7 +10,7 @@ Sessions are derived from a daily-rotating fingerprint that cannot be linked acr
 npx satsu-analytics init
 ```
 
-`init` signs you in, creates the site and wires the component into your project. To set it up by hand:
+`init` signs you in, creates the site, shows a diff and wires the component into your project, installs the package, checks for a test event and can add the Satsu MCP server to your coding agent. Other commands: `login`, `logout`, `types`, `mcp`. To set it up by hand:
 
 ```sh
 npm install satsu-analytics

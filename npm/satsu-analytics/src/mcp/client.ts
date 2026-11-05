@@ -34,8 +34,9 @@ export function explain(status: number, body: any): string {
     case 401:
       return "Your Satsu key is no longer valid. Run `npx satsu-analytics login` to sign in again.";
     case 402: {
-      const url = field(body, "upgrade_url");
-      return url ? `available on Pro: ${url}` : "available on Pro: https://satsu.pro/pricing";
+      const url = field(body, "upgrade_url") ?? "https://satsu.pro/pricing";
+      const code = field(body, "error") ?? field(body, "code");
+      return code === "plan_required" ? `available on Pro: ${url}` : `plan limit reached; see ${url}`;
     }
     case 403:
       return detail === "user_key_required"
