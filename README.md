@@ -9,7 +9,7 @@ Satsu is a hosted analytics service at [satsu.pro](https://satsu.pro). This repo
 | | |
 |---|---|
 | What | Cookieless, privacy-first web analytics; no consent banner needed |
-| Why no banner | Sessions are derived from a daily-rotating fingerprint that cannot be linked across days; raw IP addresses and user agents are never stored, no cookies, no persistent visitor IDs. |
+| Why no banner | Sessions are derived from a daily-rotating fingerprint that cannot be linked across days; raw IP addresses and user agents are never written to the analytics database and pass through our message queue only until they are processed, at most 24 hours; no cookies, no persistent visitor IDs. |
 | Hosting | EU (Hetzner, Finland) |
 | Install | One script tag, under 3 KB; works with plain HTML, Next.js, React/Vite, Vue/Nuxt, Astro |
 | Free | Free forever, no card: 10,000 events/month, 2 sites, 3 months retention, 1 goal |
@@ -50,9 +50,9 @@ Each folder in [`examples/`](./examples) is the minimal install for one framewor
 
 ## Privacy
 
-Sessions are derived from a daily-rotating fingerprint that cannot be linked across days; raw IP addresses and user agents are never stored, no cookies, no persistent visitor IDs.
+Sessions are derived from a daily-rotating fingerprint that cannot be linked across days; raw IP addresses and user agents are never written to the analytics database and pass through our message queue only until they are processed, at most 24 hours; no cookies, no persistent visitor IDs.
 
-A visit is matched to a session by a hash of site, IP address, user agent, the current day and a secret salt. The resulting hash is stored as a session ID that rotates daily, so visits cannot be linked across days; raw IP addresses and user agents are never stored. Not collected by the tracker: cookies, localStorage IDs, cross-day fingerprints, session recordings, mouse movement, PII in event properties, reverse-IP company lookups. Details: [satsu.pro/docs/privacy](https://satsu.pro/docs/privacy).
+A visit is matched to a session by a hash of site, IP address, user agent, the current day and a secret salt. The resulting hash is stored as a session ID that rotates daily, so visits cannot be linked across days; raw IP addresses and user agents are never written to the analytics database. Not collected by the tracker: cookies, localStorage IDs, cross-day fingerprints, session recordings, mouse movement, PII in event properties, reverse-IP company lookups. Details: [satsu.pro/docs/privacy](https://satsu.pro/docs/privacy).
 
 ## Links
 
