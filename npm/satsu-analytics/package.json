@@ -1,6 +1,6 @@
 {
   "name": "satsu-analytics",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Satsu analytics components, typed custom events, setup CLI and MCP server for React, Next.js, Vue/Nuxt, Astro, SvelteKit and Remix",
   "keywords": ["analytics", "privacy", "cookieless", "mcp"],
   "license": "MIT",

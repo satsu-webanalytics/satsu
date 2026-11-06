@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { basename, join } from "node:path";
+import { basename, dirname, join } from "node:path";
 
 export type FrameworkKind =
   | "next-app"
@@ -42,6 +42,7 @@ export type PackageJson = {
   homepage?: string;
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
+  workspaces?: unknown;
 };
 
 export function readPackageJson(cwd: string): PackageJson | null {
@@ -291,11 +292,39 @@ export function projectName(cwd: string): string {
 
 export type PackageManager = "npm" | "pnpm" | "yarn" | "bun";
 
+function isRoot(dir: string): boolean {
+  if (existsSync(join(dir, ".git")) || existsSync(join(dir, "pnpm-workspace.yaml"))) return true;
+  return Boolean(readPackageJson(dir)?.workspaces);
+}
+
+/**
+ * The repo or workspace root above `cwd`: the nearest directory with `.git`,
+ * `pnpm-workspace.yaml` or a `workspaces` field. Editors read their MCP config
+ * there, and a monorepo keeps its lockfile there. Falls back to `cwd`.
+ */
+export function projectRoot(cwd: string): string {
+  for (let dir = cwd; ; dir = dirname(dir)) {
+    if (isRoot(dir)) return dir;
+    if (dirname(dir) === dir) return cwd;
+  }
+}
+
+function lockfileManager(dir: string): PackageManager | undefined {
+  if (existsSync(join(dir, "pnpm-lock.yaml"))) return "pnpm";
+  if (existsSync(join(dir, "yarn.lock"))) return "yarn";
+  if (existsSync(join(dir, "bun.lockb")) || existsSync(join(dir, "bun.lock"))) return "bun";
+  if (existsSync(join(dir, "package-lock.json"))) return "npm";
+  return undefined;
+}
+
+/** The nearest lockfile from `cwd` up to the project root decides; none → npm. */
 export function detectPackageManager(cwd: string): PackageManager {
-  if (existsSync(join(cwd, "pnpm-lock.yaml"))) return "pnpm";
-  if (existsSync(join(cwd, "yarn.lock"))) return "yarn";
-  if (existsSync(join(cwd, "bun.lockb")) || existsSync(join(cwd, "bun.lock"))) return "bun";
-  return "npm";
+  const root = projectRoot(cwd);
+  for (let dir = cwd; ; dir = dirname(dir)) {
+    const pm = lockfileManager(dir);
+    if (pm) return pm;
+    if (dir === root || dirname(dir) === dir) return "npm";
+  }
 }
 
 export function hasPackage(cwd: string, name: string): boolean {

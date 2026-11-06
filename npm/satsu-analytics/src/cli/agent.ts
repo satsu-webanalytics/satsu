@@ -2,6 +2,7 @@ import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
+import { projectRoot } from "./detect";
 
 export type Editor = "claude" | "cursor" | "vscode" | "windsurf";
 
@@ -45,7 +46,8 @@ export function printedConfig(): string {
 }
 
 /** Detects editors from their config folders in the project (Windsurf: in the home directory). */
-export function detectEditors(cwd: string, home = homedir()): Editor[] {
+export function detectEditors(start: string, home = homedir()): Editor[] {
+  const cwd = projectRoot(start);
   const found: Editor[] = [];
   if (existsSync(join(cwd, ".mcp.json")) || existsSync(join(cwd, ".claude")) || existsSync(join(cwd, "CLAUDE.md"))) {
     found.push("claude");
@@ -88,7 +90,7 @@ export async function writeMcpConfig(
   home = homedir(),
 ): Promise<{ ok: true; path: string; changed: boolean } | { ok: false; reason: string }> {
   const t = target(editor);
-  const abs = join(t.home ? home : cwd, t.path);
+  const abs = join(t.home ? home : projectRoot(cwd), t.path);
   let existing: string | null = null;
   try {
     existing = await readFile(abs, "utf8");
