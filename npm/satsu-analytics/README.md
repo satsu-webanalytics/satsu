@@ -10,7 +10,7 @@ Sessions are derived from a daily-rotating fingerprint that cannot be linked acr
 npx satsu-analytics init
 ```
 
-`init` signs you in, creates the site, shows a diff and wires the component into your project, installs the package, checks for a test event and can add the Satsu MCP server to your coding agent. Other commands: `login`, `logout`, `types`, `mcp`. To set it up by hand:
+`init` signs you in, picks one of your sites or creates one, shows a diff and wires the component into your project, installs the package, checks for a test event and can add the Satsu MCP server to your coding agent. Other commands: `login`, `logout`, `types`, `mcp`. To set it up by hand:
 
 ```sh
 npm install satsu-analytics
@@ -20,6 +20,9 @@ npm install satsu-analytics
 import { Satsu } from "satsu-analytics/next"; // or "satsu-analytics/react"
 
 <Satsu site="YOUR_SITE_ID" />; // or set NEXT_PUBLIC_SATSU_SITE / VITE_SATSU_SITE
+
+// Measure only some paths, e.g. the marketing pages in front of an app:
+<Satsu site="YOUR_SITE_ID" trackPaths="/,/pricing,/docs,/blog" />;
 ```
 
 ```ts

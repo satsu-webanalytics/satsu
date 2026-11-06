@@ -52,12 +52,13 @@ export const flush = (): void => {
 };
 
 /** Injects the hosted tracker exactly once (plain React/Vite path). */
-export const inject = (site: string): void => {
+export const inject = (site: string, trackPaths?: string): void => {
   if (document.querySelector(`script[src="${TRACKER_SRC}"]`)) return;
   const s = document.createElement("script");
   s.defer = true;
   s.src = TRACKER_SRC;
   s.dataset.site = site;
+  if (trackPaths) s.dataset.trackPaths = trackPaths;
   s.onload = flush;
   document.head.append(s);
 };

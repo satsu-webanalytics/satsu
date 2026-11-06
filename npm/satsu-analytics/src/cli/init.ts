@@ -5,7 +5,7 @@ import { dirname, join } from "node:path";
 import * as p from "@clack/prompts";
 import { TRACKER_SRC } from "../core";
 import { detectEditors, EDITORS, printedConfig, writeMcpConfig, type Editor } from "./agent";
-import { ApiError, createSite, installCheck, listWorkspaces } from "./api";
+import { ApiError, CLIENT_VERSION, createSite, installCheck, listSites, listWorkspaces } from "./api";
 import { CliError, credentialsPath, readCredentials, removeCredentials, type Credentials } from "./auth";
 import {
   findScriptTag,
@@ -140,8 +140,13 @@ async function planCode(cwd: string, fw: Supported): Promise<CodePlan> {
   return plan;
 }
 
+// Pinned to this CLI's own release line. Unpinned, a package manager with a
+// minimum release age (pnpm 11) silently falls back to an older version for
+// the first day after a release; with a range it fails loudly instead.
+const PACKAGE_SPEC = CLIENT_VERSION === "0.0.0" ? "satsu-analytics" : `satsu-analytics@^${CLIENT_VERSION}`;
+
 function addCommand(pm: PackageManager): string {
-  return `${pm} ${pm === "npm" ? "install" : "add"} satsu-analytics`;
+  return `${pm} ${pm === "npm" ? "install" : "add"} ${PACKAGE_SPEC}`;
 }
 
 function manualSteps(fw: Supported, pm: PackageManager, site: string): string {
@@ -239,6 +244,37 @@ async function createSiteFlow(deps: InitDeps, auth: { creds: Credentials }): Pro
   return site;
 }
 
+const NEW_SITE = "\0new";
+
+/**
+ * Lets the user reuse one of their sites before creating one. The site whose
+ * domain matches the project's detected domain is preselected.
+ */
+async function chooseSiteFlow(deps: InitDeps, auth: { creds: Credentials }): Promise<string> {
+  const sites = await withKey(deps, auth, (c) => listSites(c.apiUrl, c.key));
+  if (sites.length === 0) return createSiteFlow(deps, auth);
+  const detected = new Set(suggestDomains(deps.cwd));
+  const match = sites.find((s) => s.domain && detected.has(s.domain));
+  const choice = answer(
+    await p.select<string>({
+      message: "Which Satsu site is this project?",
+      initialValue: match?.id ?? NEW_SITE,
+      options: [
+        ...sites.map((s) => ({
+          value: s.id,
+          label: s.domain ? `${s.name} (${s.domain})` : s.name,
+          ...(s === match ? { hint: "matches this project" } : {}),
+        })),
+        { value: NEW_SITE, label: "Create a new site" },
+      ],
+    }),
+  );
+  if (choice === NEW_SITE) return createSiteFlow(deps, auth);
+  const site = sites.find((s) => s.id === choice)!;
+  p.log.success(`Using site ${site.name} (${site.id}).`);
+  return site.id;
+}
+
 async function waitForEvents(deps: InitDeps, creds: Credentials, site: string, pm: PackageManager): Promise<boolean> {
   const go = await ask(
     `Start your dev server (${pm} run dev) and open a page. Wait here for the test event?`,
@@ -317,8 +353,8 @@ async function installPackage(deps: InitDeps, pm: PackageManager): Promise<void>
 async function unsupported(deps: InitDeps, label: string, docs: string): Promise<boolean> {
   p.log.warn(`${label} isn't set up automatically yet, so init won't write code here.`);
   let site = "YOUR_SITE_ID";
-  if (await ask("Create a Satsu site and print its script tag?")) {
-    site = await createSiteFlow(deps, { creds: await credentials(deps) });
+  if (await ask("Create or pick a Satsu site and print its script tag?")) {
+    site = await chooseSiteFlow(deps, { creds: await credentials(deps) });
   }
   p.note(`<script defer src="${TRACKER_SRC}"\n  data-site="${site}"></script>`, "Add this to the <head> of every page");
   p.outro(`Docs: ${docs}`);
@@ -346,7 +382,7 @@ async function run(deps: InitDeps): Promise<boolean> {
   }
 
   const auth = { creds: await credentials(deps) };
-  site ??= await createSiteFlow(deps, auth);
+  site ??= await chooseSiteFlow(deps, auth);
 
   const envOld = readEnvValue(envBefore, fw.envVar);
   let envWrite = envOld !== site;

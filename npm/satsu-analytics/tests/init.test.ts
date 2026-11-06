@@ -48,6 +48,7 @@ let server: Server;
 let base: string;
 let calls: Call[];
 let workspaces: unknown;
+let existingSites: unknown[];
 let installChecks: Array<Record<string, unknown>>;
 let createStatus: number;
 let configDir: string;
@@ -69,6 +70,7 @@ beforeEach(async () => {
   clock = 0;
   createStatus = 201;
   workspaces = { workspaces: [{ id: "ws_1", name: "Acme" }] };
+  existingSites = [];
   installChecks = [{ dev_ping_at: null, first_event_at: null }, { dev_ping_at: "2026-11-04T10:00:00Z", first_event_at: null }];
   server = createServer(async (req, res) => {
     const call: Call = { method: req.method!, url: req.url!, auth: req.headers.authorization, body: await body(req) };
@@ -86,6 +88,7 @@ beforeEach(async () => {
       return send(401, { error: { code: "unauthorized", message: "invalid key" } });
     }
     if (req.url === "/v1/workspaces") return send(200, workspaces);
+    if (req.url === "/v1/sites" && req.method === "GET") return send(200, { sites: existingSites });
     if (req.url === "/v1/sites" && req.method === "POST") {
       if (createStatus === 402) {
         return send(402, { error: { code: "plan_limit_reached", message: "Your plan allows 1 site." } });
@@ -170,12 +173,13 @@ describe("init — Next.js App Router", () => {
     expect(calls.map((c) => `${c.method} ${c.url}`)).toEqual([
       "POST /v1/cli/auth/start",
       "POST /v1/cli/auth/poll",
+      "GET /v1/sites",
       "GET /v1/workspaces",
       "POST /v1/sites",
       "GET /v1/sites/site_new42/install-check",
       "GET /v1/sites/site_new42/install-check",
     ]);
-    const create = calls.find((c) => c.url === "/v1/sites")!;
+    const create = calls.find((c) => c.url === "/v1/sites" && c.method === "POST")!;
     expect(create.auth).toBe("Bearer satsu_live_new");
     expect(create.body).toEqual({ workspace: "ws_1", name: "acme.dev", domain: "acme.dev" });
 
@@ -195,14 +199,35 @@ describe("init — Next.js App Router", () => {
     ui.answers.push([/Production domain/, "\0none"]);
     const dir = project("next-app");
     expect(await init(deps(dir))).toBe(true);
-    expect(calls.find((c) => c.url === "/v1/sites")!.body).toEqual({ workspace: "ws_1", name: "acme-web" });
+    expect(calls.find((c) => c.url === "/v1/sites" && c.method === "POST")!.body).toEqual({ workspace: "ws_1", name: "acme-web" });
   });
 
   it("asks for a domain when one is typed in", async () => {
     await signedIn();
     ui.answers.push([/Production domain/, "\0other"], [/^Domain$/, "https://www.Typed.io/"]);
     expect(await init(deps(project("next-app")))).toBe(true);
-    expect(calls.find((c) => c.url === "/v1/sites")!.body.domain).toBe("www.typed.io");
+    expect(calls.find((c) => c.url === "/v1/sites" && c.method === "POST")!.body.domain).toBe("www.typed.io");
+  });
+
+  it("offers the user's existing sites and preselects the one matching the project's domain", async () => {
+    await signedIn();
+    existingSites = [
+      { id: "site_other", name: "Blog", domain: "blog.example" },
+      { id: "site_legacy1", name: "Acme", domain: "acme.dev" },
+    ];
+    const dir = project("next-app");
+    expect(await init(deps(dir))).toBe(true);
+    expect(calls.some((c) => c.url === "/v1/sites" && c.method === "POST")).toBe(false);
+    expect(file(dir, ".env.local")).toContain("NEXT_PUBLIC_SATSU_SITE=site_legacy1");
+    expect(printed()).toContain("Using site Acme (site_legacy1).");
+  });
+
+  it("creates a new site when the user picks that over the existing ones", async () => {
+    await signedIn();
+    existingSites = [{ id: "site_other", name: "Blog", domain: "blog.example" }];
+    ui.answers.push([/Which Satsu site/, "\0new"]);
+    expect(await init(deps(project("next-app")))).toBe(true);
+    expect(calls.find((c) => c.url === "/v1/sites" && c.method === "POST")!.body.workspace).toBe("ws_1");
   });
 
   it("picks among several workspaces", async () => {
@@ -213,7 +238,7 @@ describe("init — Next.js App Router", () => {
     ];
     ui.answers.push([/Workspace/, "ws_2"]);
     expect(await init(deps(project("next-app")))).toBe(true);
-    expect(calls.find((c) => c.url === "/v1/sites")!.body.workspace).toBe("ws_2");
+    expect(calls.find((c) => c.url === "/v1/sites" && c.method === "POST")!.body.workspace).toBe("ws_2");
   });
 
   it("writes nothing when the diff is declined and prints manual steps", async () => {
@@ -243,7 +268,7 @@ describe("init — Next.js App Router", () => {
     const dir = project("next-app");
     writeFileSync(join(dir, ".env.local"), "NEXT_PUBLIC_SATSU_SITE=site_new42\n");
     expect(await init(deps(dir))).toBe(true);
-    expect(calls.some((c) => c.url === "/v1/sites")).toBe(false);
+    expect(calls.some((c) => c.url === "/v1/sites" && c.method === "POST")).toBe(false);
     expect(file(dir, ".env.local")).toBe("NEXT_PUBLIC_SATSU_SITE=site_new42\n");
   });
 
@@ -268,17 +293,17 @@ describe("init — Next.js App Router", () => {
     expect(await init(deps(dir))).toBe(true);
     expect(file(dir, "app/layout.tsx")).toBe(layout);
     expect(layout.match(/<Satsu \/>/g)).toHaveLength(1);
-    expect(calls.some((c) => c.url === "/v1/sites")).toBe(false);
+    expect(calls.some((c) => c.url === "/v1/sites" && c.method === "POST")).toBe(false);
   });
 
   it("signs in again when the stored key was revoked", async () => {
     await signedIn("satsu_live_revoked");
     expect(await init(deps(project("next-app")))).toBe(true);
-    expect(calls.filter((c) => c.url === "/v1/workspaces").map((c) => c.auth)).toEqual([
+    expect(calls.filter((c) => c.url === "/v1/sites" && c.method === "GET").map((c) => c.auth)).toEqual([
       "Bearer satsu_live_revoked",
       "Bearer satsu_live_new",
     ]);
-    expect(calls.find((c) => c.url === "/v1/sites")!.auth).toBe("Bearer satsu_live_new");
+    expect(calls.find((c) => c.url === "/v1/sites" && c.method === "POST")!.auth).toBe("Bearer satsu_live_new");
   });
 
   it("reports a plan limit without writing code", async () => {
@@ -305,7 +330,7 @@ describe("init — Next.js Pages Router", () => {
     const dir = project("next-pages");
     expect(await init(deps(dir))).toBe(true);
     expect(ui.asked[0]).toContain("Found a Satsu script tag in pages/_document.tsx");
-    expect(calls.some((c) => c.url === "/v1/sites")).toBe(false);
+    expect(calls.some((c) => c.url === "/v1/sites" && c.method === "POST")).toBe(false);
     expect(file(dir, "pages/_document.tsx")).not.toContain("tracker.js");
     expect(file(dir, "pages/_app.tsx")).toContain("<Satsu />");
     expect(file(dir, ".env.local")).toBe("NEXT_PUBLIC_SATSU_SITE=site_legacy1\n");
@@ -341,7 +366,7 @@ describe("init — React (Vite)", () => {
     const dir = project("vite-react");
     writeFileSync(join(dir, "pnpm-lock.yaml"), "");
     expect(await init(deps(dir))).toBe(true);
-    expect(calls.find((c) => c.url === "/v1/sites")!.body).toEqual({
+    expect(calls.find((c) => c.url === "/v1/sites" && c.method === "POST")!.body).toEqual({
       workspace: "ws_1",
       name: "shop.example.org",
       domain: "shop.example.org",
@@ -403,7 +428,7 @@ describe("init — unsupported projects", () => {
   });
 
   it("prints a placeholder tag without signing in when declined", async () => {
-    ui.answers.push([/Create a Satsu site/, false]);
+    ui.answers.push([/Create or pick a Satsu site/, false]);
     const dir = mkdtempSync(join(tmpdir(), "satsu-init-none-"));
     expect(await init(deps(dir))).toBe(true);
     expect(printed()).toContain('data-site="YOUR_SITE_ID"');

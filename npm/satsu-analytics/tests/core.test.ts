@@ -24,6 +24,16 @@ describe("inject", () => {
     expect(document.cookie).toBe("");
     expect(localStorage.length).toBe(0);
   });
+
+  it("passes trackPaths on as data-track-paths, and omits it by default", () => {
+    document.querySelectorAll(`script[src="${TRACKER_SRC}"]`).forEach((s) => s.remove());
+    inject("site_1", "/,/pricing");
+    const tag = document.querySelector(`script[src="${TRACKER_SRC}"]`) as HTMLScriptElement;
+    expect(tag.dataset.trackPaths).toBe("/,/pricing");
+    tag.remove();
+    inject("site_1");
+    expect((document.querySelector(`script[src="${TRACKER_SRC}"]`) as HTMLScriptElement).hasAttribute("data-track-paths")).toBe(false);
+  });
 });
 
 describe("track", () => {

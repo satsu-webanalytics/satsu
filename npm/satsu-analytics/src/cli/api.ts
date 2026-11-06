@@ -108,6 +108,25 @@ export async function listWorkspaces(base: string, key: string): Promise<Workspa
     .map((w: any) => ({ id: w.id, name: typeof w.name === "string" ? w.name : w.id }));
 }
 
+export interface SiteSummary {
+  id: string;
+  name: string;
+  domain: string | null;
+}
+
+/** Sites the key's user can see, as public IDs (the value of `data-site`). */
+export async function listSites(base: string, key: string): Promise<SiteSummary[]> {
+  const r = await authed<any>(base, key, "GET", "/v1/sites");
+  const list: unknown[] = Array.isArray(r) ? r : Array.isArray(r?.sites) ? r.sites : [];
+  return list
+    .filter((s: any) => typeof s?.id === "string" && s.id)
+    .map((s: any) => ({
+      id: s.id,
+      name: typeof s.name === "string" && s.name ? s.name : s.id,
+      domain: typeof s.domain === "string" && s.domain ? s.domain : null,
+    }));
+}
+
 /** Creates a site and returns its public ID (the value of `data-site`). */
 export async function createSite(
   base: string,

@@ -1,9 +1,9 @@
 import { inject, resolveMode, warnMissing } from "./core";
 
 /** Framework-free entry used by the Vue, Astro, Svelte and Remix components. */
-export function start(site: string | undefined, debug?: boolean): void {
+export function start(site: string | undefined, debug?: boolean, trackPaths?: string): void {
   if (!site) return warnMissing();
-  if (resolveMode(site, debug) === "live") inject(site);
+  if (resolveMode(site, debug) === "live") inject(site, trackPaths);
 }
 
 /** Vite-style public variable; bundlers inline it at build time. */

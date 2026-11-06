@@ -4,7 +4,7 @@ import { flush, resolveMode, TRACKER_SRC, warnMissing } from "./core";
 import type { SatsuProps } from "./react";
 
 /** Next.js: the tracker goes through next/script; local hosts only ping. */
-export function Satsu({ site, debug }: SatsuProps) {
+export function Satsu({ site, debug, trackPaths }: SatsuProps) {
   const id = site || process.env.NEXT_PUBLIC_SATSU_SITE;
   const [live, setLive] = useState(false);
   useEffect(() => {
@@ -12,5 +12,7 @@ export function Satsu({ site, debug }: SatsuProps) {
     setLive(resolveMode(id, debug) === "live");
   }, [id, debug]);
   if (!id || !live) return null;
-  return <Script src={TRACKER_SRC} data-site={id} strategy="afterInteractive" onLoad={flush} />;
+  return (
+    <Script src={TRACKER_SRC} data-site={id} data-track-paths={trackPaths} strategy="afterInteractive" onLoad={flush} />
+  );
 }
