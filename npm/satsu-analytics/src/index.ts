@@ -42,3 +42,6 @@ export function track<N extends Name>(name: N, ...args: Args<N>): void {
     }, 200);
   }
 }
+
+export { badgeUrl, badgeVerifyUrl, BADGE_WIDTH, BADGE_HEIGHT } from "./badge";
+export type { BadgeOptions, BadgeType } from "./badge";
